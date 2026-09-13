@@ -1,10 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SvgIcon } from './SvgIcon';
 import { CopyButton } from './CopyButton';
 import { DownloadButton } from './DownloadButton';
 import { buildSvgDocument } from '../lib/svg';
 import { useTheme } from '../hooks/useTheme';
-import type { SvgFile } from '../lib/types';
+import type { SvgFile, Theme } from '../lib/types';
 
 type Props = {
   file: SvgFile;
@@ -12,10 +12,12 @@ type Props = {
 };
 
 export function SvgPreview({ file, onClose }: Props) {
-  const { theme, toggleTheme } = useTheme();
+  const { theme: siteTheme } = useTheme();
+  // Local preview theme only — does not change the whole site
+  const [previewTheme, setPreviewTheme] = useState<Theme>(siteTheme);
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const svgDoc = buildSvgDocument(file, theme);
-  const themeLabel = theme === 'light' ? 'Dark mode' : 'Light mode';
+  const svgDoc = buildSvgDocument(file, previewTheme);
+  const themeLabel = previewTheme === 'light' ? 'Dark mode' : 'Light mode';
 
   useEffect(() => {
     const el = dialogRef.current;
@@ -27,6 +29,10 @@ export function SvgPreview({ file, onClose }: Props) {
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
   }, [onClose]);
+
+  const togglePreviewTheme = () => {
+    setPreviewTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+  };
 
   return (
     <dialog
@@ -42,11 +48,11 @@ export function SvgPreview({ file, onClose }: Props) {
           <button
             type="button"
             className="preview-theme"
-            onClick={toggleTheme}
+            onClick={togglePreviewTheme}
             aria-label={themeLabel}
             title={themeLabel}
           >
-            {theme === 'light' ? (
+            {previewTheme === 'light' ? (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
               </svg>
@@ -72,8 +78,8 @@ export function SvgPreview({ file, onClose }: Props) {
             </svg>
           </button>
         </div>
-        <div className="preview-icon">
-          <SvgIcon file={file} size={160} />
+        <div className={`preview-icon preview-icon--${previewTheme}`}>
+          <SvgIcon file={file} size={160} forceTheme={previewTheme} />
         </div>
         <div className="preview-code">
           <pre>
@@ -140,9 +146,17 @@ export function SvgPreview({ file, onClose }: Props) {
           align-items: center;
           justify-content: center;
           padding: 32px;
-          background: var(--bg-secondary);
           border-radius: var(--radius);
           margin-bottom: 16px;
+          transition: background 0.2s;
+        }
+        .preview-icon--dark {
+          background: #1a1e26;
+          color: #f3f4f6;
+        }
+        .preview-icon--light {
+          background: #f1f3f5;
+          color: #111827;
         }
         .preview-code {
           margin-bottom: 16px;

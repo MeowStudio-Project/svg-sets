@@ -3,7 +3,7 @@ import { SvgIcon } from './SvgIcon';
 import { SvgPreview } from './SvgPreview';
 import { CopyButton } from './CopyButton';
 import { DownloadButton } from './DownloadButton';
-import { buildSvgDocument, getIconBody } from '../lib/svg';
+import { buildSvgDocument } from '../lib/svg';
 import { useTheme } from '../hooks/useTheme';
 import type { SvgFile } from '../lib/types';
 
@@ -19,8 +19,7 @@ export function SvgGrid({ files }: Props) {
     <>
       <div className="svg-grid">
         {files.map((file) => {
-          const body = getIconBody(file, theme);
-          const svgDoc = buildSvgDocument(body);
+          const svgDoc = buildSvgDocument(file, theme);
           return (
             <div key={file.key} className="svg-grid-item">
               <button
@@ -29,7 +28,7 @@ export function SvgGrid({ files }: Props) {
                 onClick={() => setPreview(file)}
                 aria-label={`Preview ${file.name}`}
               >
-                <SvgIcon file={file} size={32} />
+                <SvgIcon file={file} size={28} />
               </button>
               <div className="icon-name" title={file.name}>
                 {file.name}

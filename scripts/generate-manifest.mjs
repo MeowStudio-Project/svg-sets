@@ -1,6 +1,5 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -62,10 +61,8 @@ function resolveLicenseUrl(raw) {
   return u && typeof u === 'string' ? u.trim() : undefined;
 }
 
-function stableId(relPath) {
-  const hash = createHash('sha256').update(relPath).digest('hex').slice(0, 12);
-  const base = path.basename(relPath, '.json').toLowerCase().replace(/[^a-z0-9]+/g, '-');
-  return `${base}-${hash}`;
+function baseId(relPath) {
+  return path.basename(relPath, '.json').toLowerCase().replace(/[^a-z0-9]+/g, '-');
 }
 
 function processFile(relPath) {
@@ -85,6 +82,16 @@ function processFile(relPath) {
     return null;
   }
 
+  // Prefer root width/height (Iconify grid), then info.*, then 24.
+  const defaultH =
+    (typeof raw.height === 'number' && raw.height > 0 && raw.height) ||
+    (typeof raw.info?.height === 'number' && raw.info.height > 0 && raw.info.height) ||
+    24;
+  const defaultW =
+    (typeof raw.width === 'number' && raw.width > 0 && raw.width) ||
+    (typeof raw.info?.width === 'number' && raw.info.width > 0 && raw.info.width) ||
+    defaultH;
+
   const files = [];
   for (const [key, data] of Object.entries(icons)) {
     if (!data || typeof data !== 'object') continue;
@@ -92,12 +99,18 @@ function processFile(relPath) {
     const light = typeof data.light === 'string' ? data.light : undefined;
     const dark = typeof data.dark === 'string' ? data.dark : undefined;
     if (!body && !light && !dark) continue;
+    const w =
+      (typeof data.width === 'number' && data.width > 0 && data.width) || defaultW;
+    const h =
+      (typeof data.height === 'number' && data.height > 0 && data.height) || defaultH;
     files.push({
       name: key,
       key,
       body: body ?? light ?? dark ?? '',
       light,
       dark,
+      width: w,
+      height: h,
     });
   }
 
@@ -130,7 +143,7 @@ function processFile(relPath) {
   const authorUrl = resolveAuthorUrl(raw);
   const licenseName = resolveLicenseName(raw);
   const licenseUrl = resolveLicenseUrl(raw);
-  const id = stableId(relPath);
+  const id = baseId(relPath);
 
   const archiveName = `${id}.zip`;
   const archiveUrl = `/archives/${archiveName}`;
@@ -162,7 +175,7 @@ function createMinimalZip(files) {
   for (const file of files) {
     const name = `${file.key}.svg`;
     const content = Buffer.from(
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">\n  ${file.body}\n</svg>\n`,
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${file.width || 24} ${file.height || 24}">\n  ${file.body}\n</svg>\n`,
       'utf8'
     );
     const nameBuf = Buffer.from(name, 'utf8');
@@ -249,9 +262,22 @@ function main() {
   console.log(`[info] Found ${relFiles.length} JSON file(s)`);
 
   const sets = [];
+  const usedIds = new Map();
   for (const rel of relFiles) {
     const set = processFile(rel);
-    if (set) sets.push(set);
+    if (!set) continue;
+    // Keep clean IDs; only suffix on collision
+    let id = set.id;
+    if (usedIds.has(id)) {
+      const n = usedIds.get(id) + 1;
+      usedIds.set(id, n);
+      id = `${id}-${n}`;
+      set.id = id;
+      set.archive = { name: `${id}.zip`, url: `/archives/${id}.zip` };
+    } else {
+      usedIds.set(id, 1);
+    }
+    sets.push(set);
   }
 
   const categoryMap = new Map();

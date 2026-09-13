@@ -6,8 +6,16 @@ export function getIconBody(file: SvgFile, theme: Theme): string {
   return file.body;
 }
 
-export function buildSvgDocument(body: string): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">\n  ${body}\n</svg>`;
+export function getViewBox(file: SvgFile): string {
+  const w = file.width && file.width > 0 ? file.width : 24;
+  const h = file.height && file.height > 0 ? file.height : 24;
+  return `0 0 ${w} ${h}`;
+}
+
+export function buildSvgDocument(file: SvgFile, theme: Theme): string {
+  const body = getIconBody(file, theme);
+  const viewBox = getViewBox(file);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}">\n  ${body}\n</svg>`;
 }
 
 export function downloadSvg(filename: string, content: string) {
@@ -27,7 +35,6 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     await navigator.clipboard.writeText(text);
     return true;
   } catch {
-    // fallback
     try {
       const ta = document.createElement('textarea');
       ta.value = text;

@@ -4,6 +4,8 @@ export type SvgFile = {
   body: string;
   light?: string;
   dark?: string;
+  width?: number;
+  height?: number;
 };
 
 export type SvgSetMetadata = {

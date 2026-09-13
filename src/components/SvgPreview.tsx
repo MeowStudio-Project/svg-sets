@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { SvgIcon } from './SvgIcon';
 import { CopyButton } from './CopyButton';
 import { DownloadButton } from './DownloadButton';
-import { buildSvgDocument, getIconBody } from '../lib/svg';
+import { buildSvgDocument } from '../lib/svg';
 import { useTheme } from '../hooks/useTheme';
 import type { SvgFile } from '../lib/types';
 
@@ -14,8 +14,7 @@ type Props = {
 export function SvgPreview({ file, onClose }: Props) {
   const { theme } = useTheme();
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const body = getIconBody(file, theme);
-  const svgDoc = buildSvgDocument(body);
+  const svgDoc = buildSvgDocument(file, theme);
 
   useEffect(() => {
     const el = dialogRef.current;

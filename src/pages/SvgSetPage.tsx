@@ -12,8 +12,11 @@ export function SvgSetPage() {
       <div className="error-page">
         <div className="error-content">
           <h1 className="error-code">404</h1>
-          <Link to="/" className="error-back">
-            返回svg
+          <Link to="/" className="error-back" aria-label="Back to home">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
           </Link>
         </div>
         <style>{`
@@ -36,12 +39,17 @@ export function SvgSetPage() {
             line-height: 1;
           }
           .error-back {
-            display: inline-block;
-            font-size: 0.9375rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
             color: var(--text-secondary);
-            text-decoration: underline;
+            transition: background 0.15s, color 0.15s;
           }
           .error-back:hover {
+            background: var(--bg-hover);
             color: var(--text);
           }
         `}</style>

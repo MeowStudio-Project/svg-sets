@@ -2,7 +2,8 @@ import { useLanguage } from '../hooks/useLanguage';
 
 export function LangToggle() {
   const { lang, toggleLang, t } = useLanguage();
-  const label = lang === 'zh-TW' ? '中文繁體' : 'English';
+  // Show the language currently in use (not the one you would switch to)
+  const currentLabel = lang === 'zh-TW' ? '中文繁體' : 'English';
 
   return (
     <button
@@ -27,7 +28,7 @@ export function LangToggle() {
         <line x1="2" y1="12" x2="22" y2="12" />
         <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
       </svg>
-      <span className="lang-label">{label}</span>
+      <span className="lang-label">{currentLabel}</span>
       <style>{`
         .lang-toggle {
           display: inline-flex;

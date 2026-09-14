@@ -7,7 +7,7 @@ const ROOT = path.resolve(__dirname, '..');
 const SVG_DIR = path.join(ROOT, 'json');
 const OUT_DIR = path.join(ROOT, 'src', 'data');
 const MANIFEST_PATH = path.join(OUT_DIR, 'manifest.json');
-const ARCHIVES_DIR = path.join(ROOT, 'public', 'archives');
+const ARCHIVES_DIR = path.join(ROOT, 'archives');
 
 function walkJsonFiles(dir, base = dir) {
   const results = [];
@@ -148,6 +148,11 @@ function processFile(relPath) {
   const archiveName = `${id}.zip`;
   const archiveUrl = `/archives/${archiveName}`;
 
+  // Only embed sample icons in the manifest (keeps file small)
+  const sampleFiles = samples
+    .map((key) => files.find((f) => f.key === key))
+    .filter(Boolean);
+
   return {
     id,
     name,
@@ -157,7 +162,11 @@ function processFile(relPath) {
     licenseName,
     licenseUrl,
     samples,
-    files,
+    sampleFiles,
+    source: relPath.replace(/\\/g, '/'),
+    iconCount: files.length,
+    // full files kept only for ZIP generation (stripped before write)
+    _files: files,
     archive: {
       name: archiveName,
       url: archiveUrl,
@@ -249,7 +258,7 @@ function generateZips(sets) {
     fs.mkdirSync(ARCHIVES_DIR, { recursive: true });
   }
   for (const set of sets) {
-    const buf = createMinimalZip(set.files);
+    const buf = createMinimalZip(set._files || []);
     const outPath = path.join(ARCHIVES_DIR, set.archive.name);
     fs.writeFileSync(outPath, buf);
   }
@@ -294,6 +303,13 @@ function main() {
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
+  // Strip internal _files before writing (manifest must stay small)
+  for (const cat of categories) {
+    for (const set of cat.sets) {
+      delete set._files;
+    }
+  }
+
   const manifest = {
     generatedAt: new Date().toISOString(),
     categories,
@@ -302,7 +318,8 @@ function main() {
   if (!fs.existsSync(OUT_DIR)) {
     fs.mkdirSync(OUT_DIR, { recursive: true });
   }
-  fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2));
+  // Compact JSON (no pretty-print) to keep size down
+  fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest));
   console.log(`[info] Wrote manifest with ${sets.length} set(s) in ${categories.length} categor(y/ies)`);
 
   generateZips(sets);

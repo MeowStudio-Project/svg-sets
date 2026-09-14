@@ -1,4 +1,4 @@
-import type { SvgManifest, SvgSet } from './types';
+import type { SvgFile, SvgManifest, SvgSet, Theme } from './types';
 import manifestData from '../data/manifest.json';
 
 export const manifest = manifestData as SvgManifest;
@@ -28,4 +28,55 @@ export function searchSets(query: string): SvgManifest['categories'] {
     }
   }
   return result;
+}
+
+type RawIcon = {
+  body?: string;
+  light?: string;
+  dark?: string;
+  width?: number;
+  height?: number;
+};
+
+/** Fetch full icon list for a set from /json/{source} */
+export async function loadSetFiles(set: SvgSet): Promise<SvgFile[]> {
+  const url = `/json/${set.source.split('/').map(encodeURIComponent).join('/')}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Failed to load set: ${res.status}`);
+  }
+  const raw = await res.json();
+  const icons = raw.icons;
+  if (!icons || typeof icons !== 'object') return [];
+
+  const defaultH =
+    (typeof raw.height === 'number' && raw.height > 0 && raw.height) ||
+    (typeof raw.info?.height === 'number' && raw.info.height > 0 && raw.info.height) ||
+    24;
+  const defaultW =
+    (typeof raw.width === 'number' && raw.width > 0 && raw.width) ||
+    (typeof raw.info?.width === 'number' && raw.info.width > 0 && raw.info.width) ||
+    defaultH;
+
+  const files: SvgFile[] = [];
+  for (const [key, data] of Object.entries(icons as Record<string, RawIcon>)) {
+    if (!data || typeof data !== 'object') continue;
+    const body = typeof data.body === 'string' ? data.body : undefined;
+    const light = typeof data.light === 'string' ? data.light : undefined;
+    const dark = typeof data.dark === 'string' ? data.dark : undefined;
+    if (!body && !light && !dark) continue;
+    const w = (typeof data.width === 'number' && data.width > 0 && data.width) || defaultW;
+    const h = (typeof data.height === 'number' && data.height > 0 && data.height) || defaultH;
+    files.push({
+      name: key,
+      key,
+      body: body ?? light ?? dark ?? '',
+      light,
+      dark,
+      width: w,
+      height: h,
+    });
+  }
+  files.sort((a, b) => a.key.localeCompare(b.key));
+  return files;
 }

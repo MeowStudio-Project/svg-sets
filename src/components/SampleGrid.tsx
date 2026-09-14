@@ -3,14 +3,10 @@ import type { SvgFile } from '../lib/types';
 
 type Props = {
   files: SvgFile[];
-  sampleKeys: string[];
 };
 
-export function SampleGrid({ files, sampleKeys }: Props) {
-  const samples = sampleKeys
-    .map((key) => files.find((f) => f.key === key))
-    .filter((f): f is SvgFile => !!f)
-    .slice(0, 6);
+export function SampleGrid({ files }: Props) {
+  const samples = files.slice(0, 6);
 
   return (
     <div className="sample-grid">

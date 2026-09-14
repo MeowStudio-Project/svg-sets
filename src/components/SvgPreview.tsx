@@ -87,8 +87,8 @@ export function SvgPreview({ file, onClose }: Props) {
           </pre>
         </div>
         <div className="preview-actions">
-          <CopyButton text={svgDoc} />
-          <DownloadButton filename={`${file.key}.svg`} content={svgDoc} />
+          <CopyButton text={svgDoc} className="preview-btn" />
+          <DownloadButton filename={`${file.key}.svg`} content={svgDoc} className="preview-btn" />
         </div>
       </div>
       <style>{`
@@ -105,16 +105,16 @@ export function SvgPreview({ file, onClose }: Props) {
         .svg-preview-dialog::backdrop {
           background: rgba(0, 0, 0, 0.45);
         }
-        .preview-content {
+        .svg-preview-dialog .preview-content {
           padding: 20px;
         }
-        .preview-header {
+        .svg-preview-dialog .preview-header {
           display: flex;
           align-items: center;
           gap: 8px;
           margin-bottom: 16px;
         }
-        .preview-title {
+        .svg-preview-dialog .preview-title {
           margin: 0;
           flex: 1;
           font-size: 1.125rem;
@@ -124,8 +124,8 @@ export function SvgPreview({ file, onClose }: Props) {
           text-overflow: ellipsis;
           white-space: nowrap;
         }
-        .preview-theme,
-        .preview-close {
+        .svg-preview-dialog .preview-theme,
+        .svg-preview-dialog .preview-close {
           display: flex;
           align-items: center;
           justify-content: center;
@@ -136,12 +136,12 @@ export function SvgPreview({ file, onClose }: Props) {
           color: var(--text-secondary);
           transition: background 0.15s, color 0.15s;
         }
-        .preview-theme:hover,
-        .preview-close:hover {
+        .svg-preview-dialog .preview-theme:hover,
+        .svg-preview-dialog .preview-close:hover {
           background: var(--bg-hover);
           color: var(--text);
         }
-        .preview-icon {
+        .svg-preview-dialog .preview-icon {
           display: flex;
           align-items: center;
           justify-content: center;
@@ -150,15 +150,15 @@ export function SvgPreview({ file, onClose }: Props) {
           margin-bottom: 16px;
           transition: background 0.2s;
         }
-        .preview-icon--dark {
+        .svg-preview-dialog .preview-icon--dark {
           background: #1a1e26;
           color: #f3f4f6;
         }
-        .preview-icon--light {
+        .svg-preview-dialog .preview-icon--light {
           background: #f1f3f5;
           color: #111827;
         }
-        .preview-code {
+        .svg-preview-dialog .preview-code {
           margin-bottom: 16px;
           max-height: 160px;
           overflow: auto;
@@ -166,7 +166,7 @@ export function SvgPreview({ file, onClose }: Props) {
           border-radius: var(--radius-sm);
           border: 1px solid var(--border);
         }
-        .preview-code pre {
+        .svg-preview-dialog .preview-code pre {
           margin: 0;
           padding: 12px;
           font-family: var(--mono);
@@ -175,12 +175,12 @@ export function SvgPreview({ file, onClose }: Props) {
           white-space: pre-wrap;
           word-break: break-all;
         }
-        .preview-actions {
+        .svg-preview-dialog .preview-actions {
           display: flex;
           flex-wrap: wrap;
           gap: 8px;
         }
-        .btn {
+        .svg-preview-dialog .preview-btn {
           display: inline-flex;
           align-items: center;
           justify-content: center;
@@ -192,10 +192,10 @@ export function SvgPreview({ file, onClose }: Props) {
           color: var(--bg);
           transition: opacity 0.15s;
         }
-        .btn:hover {
+        .svg-preview-dialog .preview-btn:hover {
           opacity: 0.9;
         }
-        .btn svg {
+        .svg-preview-dialog .preview-btn svg {
           width: 18px;
           height: 18px;
         }

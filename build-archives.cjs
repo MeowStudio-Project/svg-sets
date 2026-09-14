@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { ZipArchive } = require("archiver");
 const json = "./json";
-const output = "./public/archives";
+const output = "./archives";
 const files = fs.readdirSync(json).filter(file => file.endsWith(".json"));
 const total = files.length;
 fs.mkdirSync(output, { recursive: true });

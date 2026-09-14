@@ -9,7 +9,7 @@ type Props = {
 export function SvgSetCard({ set }: Props) {
   return (
     <Link to={`/svg-set/${set.id}`} className="svg-set-card" aria-label={`Open ${set.name}`}>
-      <SampleGrid files={set.files} sampleKeys={set.samples} />
+      <SampleGrid files={set.sampleFiles} />
       <div className="card-name">{set.name}</div>
       <style>{`
         .svg-set-card {

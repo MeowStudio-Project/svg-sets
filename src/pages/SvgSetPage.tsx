@@ -1,11 +1,41 @@
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { getSetById } from '../lib/manifest';
+import { getSetById, loadSetFiles } from '../lib/manifest';
 import { SvgGrid } from '../components/SvgGrid';
-import { DownloadButton } from '../components/DownloadButton';
+import type { SvgFile } from '../lib/types';
 
 export function SvgSetPage() {
   const { id } = useParams<{ id: string }>();
   const set = id ? getSetById(id) : undefined;
+  const [files, setFiles] = useState<SvgFile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!set) {
+      setLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    loadSetFiles(set)
+      .then((f) => {
+        if (!cancelled) {
+          setFiles(f);
+          setLoading(false);
+        }
+      })
+      .catch((e) => {
+        if (!cancelled) {
+          setError(e instanceof Error ? e.message : 'Failed to load');
+          setLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [set]);
 
   if (!set) {
     return (
@@ -31,7 +61,7 @@ export function SvgSetPage() {
             text-align: center;
           }
           .error-code {
-            margin: 0 0 16px;
+            margin: 0 0 20px;
             font-size: 4rem;
             font-weight: 700;
             letter-spacing: -0.03em;
@@ -120,7 +150,9 @@ export function SvgSetPage() {
             </a>
           </div>
         )}
-        <SvgGrid files={set.files} />
+        {loading && <p className="loading">Loading icons…</p>}
+        {error && <p className="load-error">{error}</p>}
+        {!loading && !error && <SvgGrid files={files} />}
       </div>
       <style>{pageStyles}</style>
     </div>
@@ -207,6 +239,15 @@ const pageStyles = `
     width: 18px;
     height: 18px;
     flex-shrink: 0;
+  }
+  .loading,
+  .load-error {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 48px 16px;
+  }
+  .load-error {
+    color: #e11d48;
   }
   .not-found {
     text-align: center;

@@ -5,13 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/generate-manifest.mjs && tsc --noEmit && vite build",
+    "build": "node scripts/generate-manifest.mjs && tsc --noEmit && vite build && node scripts/copy-archives.mjs && node scripts/copy-json.mjs",
     "generate-manifest": "node scripts/generate-manifest.mjs",
     "check": "tsc --noEmit",
     "preview": "vite preview"
   },
   "dependencies": {
-    "archiver": "^8.0.0",
+    "archiver": "^7.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0"

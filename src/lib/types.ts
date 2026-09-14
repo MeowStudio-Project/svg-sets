@@ -8,16 +8,6 @@ export type SvgFile = {
   height?: number;
 };
 
-export type SvgSetMetadata = {
-  name: string;
-  category: string;
-  authorName?: string;
-  authorUrl?: string;
-  licenseName?: string;
-  licenseUrl?: string;
-  samples?: string[];
-};
-
 export type SvgSet = {
   id: string;
   name: string;
@@ -26,8 +16,13 @@ export type SvgSet = {
   authorUrl?: string;
   licenseName?: string;
   licenseUrl?: string;
+  /** Sample keys in display order */
   samples: string[];
-  files: SvgFile[];
+  /** Only sample icons (for homepage cards) — not the full set */
+  sampleFiles: SvgFile[];
+  /** Relative path under /json/ to load the full set */
+  source: string;
+  iconCount: number;
   archive?: {
     name: string;
     url: string;

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getSetById, loadSetFiles } from '../lib/manifest';
 import { SvgGrid } from '../components/SvgGrid';
+import { Spinner } from '../components/Spinner';
 import type { SvgFile } from '../lib/types';
 
 export function SvgSetPage() {
@@ -150,7 +151,11 @@ export function SvgSetPage() {
             </a>
           </div>
         )}
-        {loading && <p className="loading">Loading icons…</p>}
+        {loading && (
+          <div className="loading-wrap">
+            <Spinner size={48} />
+          </div>
+        )}
         {error && <p className="load-error">{error}</p>}
         {!loading && !error && <SvgGrid files={files} />}
       </div>
@@ -239,6 +244,13 @@ const pageStyles = `
     width: 18px;
     height: 18px;
     flex-shrink: 0;
+  }
+  .loading-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 16px;
+    color: #747680;
   }
   .loading,
   .load-error {

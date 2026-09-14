@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useTheme } from '../hooks/useTheme';
 import { getIconBody, getViewBox } from '../lib/svg';
 import type { SvgFile, Theme } from '../lib/types';
+import { Spinner } from './Spinner';
 
 type Props = {
   file: SvgFile;
@@ -17,6 +18,10 @@ export function SvgIcon({ file, size = 24, className, title, forceTheme }: Props
   const theme = forceTheme ?? siteTheme;
   const body = useMemo(() => getIconBody(file, theme), [file, theme]);
   const viewBox = useMemo(() => getViewBox(file), [file]);
+
+  if (!body) {
+    return <Spinner size={typeof size === 'number' ? size : 24} className={className} />;
+  }
 
   return (
     <svg

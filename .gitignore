@@ -3,5 +3,3 @@ dist/
 .DS_Store
 *.log
 FETCH_HEAD
-archives/
-src/data/manifest.json

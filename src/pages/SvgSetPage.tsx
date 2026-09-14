@@ -5,8 +5,10 @@ import { SvgGrid } from '../components/SvgGrid';
 import { Spinner } from '../components/Spinner';
 import type { SvgFile } from '../lib/types';
 import { archiveUrl } from '../lib/dataBase';
+import { useLanguage } from '../hooks/useLanguage';
 
 export function SvgSetPage() {
+  const { t } = useLanguage();
   const { id } = useParams<{ id: string }>();
   const set = id ? getSetById(id) : undefined;
   const [files, setFiles] = useState<SvgFile[]>([]);
@@ -93,7 +95,7 @@ export function SvgSetPage() {
     <div className="set-page">
       <div className="set-inner">
         <Link to="/" className="back-link">
-          ← Back
+          {t('back')}
         </Link>
         <h1 className="set-title">{set.name}</h1>
         <div className="set-meta">

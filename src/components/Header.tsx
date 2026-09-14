@@ -1,5 +1,6 @@
 import { Link, useSearchParams } from 'react-router-dom';
 import { ThemeToggle } from './ThemeToggle';
+import { LangToggle } from './LangToggle';
 import { SearchBar } from './SearchBar';
 import './Header.css';
 
@@ -25,6 +26,7 @@ export function Header() {
           <SearchBar value={query} onChange={handleSearch} />
         </div>
         <div className="header-actions">
+          <LangToggle />
           <ThemeToggle />
         </div>
       </div>

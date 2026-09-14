@@ -4,6 +4,7 @@ import { CategorySection } from '../components/CategorySection';
 import { SearchIconCard } from '../components/SearchIconCard';
 import { Spinner } from '../components/Spinner';
 import { SvgSetCard } from '../components/SvgSetCard';
+import { useLanguage } from '../hooks/useLanguage';
 import {
   getAllSets,
   groupByCategory,
@@ -17,6 +18,7 @@ const PREVIEW_LIMIT = 6;
 export function HomePage() {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') ?? '';
+  const { t } = useLanguage();
   const [ready, setReady] = useState(false);
   const [iconExpanded, setIconExpanded] = useState(false);
   const [setExpanded, setSetExpanded] = useState(false);
@@ -26,7 +28,6 @@ export function HomePage() {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  // Reset expand when query changes
   useEffect(() => {
     setIconExpanded(false);
     setSetExpanded(false);
@@ -60,37 +61,44 @@ export function HomePage() {
     );
   }
 
-  // Default browse (no search)
   if (!isSearch) {
-    return <BrowseAll />;
+    const categories = groupByCategory(getAllSets());
+    return (
+      <div className="home-page">
+        <div className="home-inner">
+          {categories.map((cat) => (
+            <CategorySection key={cat.name} name={cat.name} sets={cat.sets} />
+          ))}
+        </div>
+        <style>{pageStyles}</style>
+      </div>
+    );
   }
 
-  const iconPreview = iconExpanded ? iconHits : iconHits.slice(0, PREVIEW_LIMIT);
-  const setPreview = setExpanded ? setHits : setHits.slice(0, PREVIEW_LIMIT);
-  const iconHasMore = iconHits.length > PREVIEW_LIMIT;
-  const setHasMore = setHits.length > PREVIEW_LIMIT;
-
-  const iconGrouped = iconExpanded
-    ? groupHitsByCategory(iconHits)
-    : null;
-  const setGrouped = setExpanded
-    ? groupByCategory(setHits)
-    : null;
-
   const noResults = iconHits.length === 0 && setHits.length === 0;
+
+  // When expanded, show ALL of that section by category; the other section stays collapsed preview
+  const iconList = iconExpanded ? iconHits : iconHits.slice(0, PREVIEW_LIMIT);
+  const setList = setExpanded ? setHits : setHits.slice(0, PREVIEW_LIMIT);
+  const iconHasMore = !iconExpanded && iconHits.length > PREVIEW_LIMIT;
+  const setHasMore = !setExpanded && setHits.length > PREVIEW_LIMIT;
+
+  const iconGrouped = iconExpanded ? groupHitsByCategory(iconHits) : null;
+  const setGrouped = setExpanded ? groupByCategory(setHits) : null;
 
   return (
     <div className="home-page">
       <div className="home-inner">
         {noResults ? (
-          <p className="empty-state">No SVG Sets found</p>
+          <p className="empty-state">{t('noResults')}</p>
         ) : (
           <>
-            {/* Icon name matches */}
             {iconHits.length > 0 && (
-              <section className="search-section">
-                <h2 className="search-title">相關圖示結果</h2>
-                {iconExpanded && iconGrouped ? (
+              <section className="search-section" aria-labelledby="related-icons-title">
+                <h2 id="related-icons-title" className="search-title">
+                  {t('relatedIcons')}
+                </h2>
+                {iconGrouped ? (
                   iconGrouped.map((g) => (
                     <div key={g.name} className="search-cat">
                       <h3 className="search-cat-title">{g.name}</h3>
@@ -103,17 +111,17 @@ export function HomePage() {
                   ))
                 ) : (
                   <div className="category-grid">
-                    {iconPreview.map((hit) => (
+                    {iconList.map((hit) => (
                       <SearchIconCard key={hit.set.id} hit={hit} />
                     ))}
                   </div>
                 )}
-                {iconHasMore && !iconExpanded && (
+                {iconHasMore && (
                   <button
                     type="button"
                     className="more-btn"
                     onClick={() => setIconExpanded(true)}
-                    aria-label="Show more"
+                    aria-label={t('showMore')}
                   >
                     …
                   </button>
@@ -121,11 +129,12 @@ export function HomePage() {
               </section>
             )}
 
-            {/* Set name matches */}
             {setHits.length > 0 && (
-              <section className="search-section">
-                <h2 className="search-title">相關結果</h2>
-                {setExpanded && setGrouped ? (
+              <section className="search-section" aria-labelledby="related-sets-title">
+                <h2 id="related-sets-title" className="search-title">
+                  {t('relatedSets')}
+                </h2>
+                {setGrouped ? (
                   setGrouped.map((g) => (
                     <div key={g.name} className="search-cat">
                       <h3 className="search-cat-title">{g.name}</h3>
@@ -138,17 +147,17 @@ export function HomePage() {
                   ))
                 ) : (
                   <div className="category-grid">
-                    {setPreview.map((s) => (
+                    {setList.map((s) => (
                       <SvgSetCard key={s.id} set={s} />
                     ))}
                   </div>
                 )}
-                {setHasMore && !setExpanded && (
+                {setHasMore && (
                   <button
                     type="button"
                     className="more-btn"
                     onClick={() => setSetExpanded(true)}
-                    aria-label="Show more"
+                    aria-label={t('showMore')}
                   >
                     …
                   </button>
@@ -157,20 +166,6 @@ export function HomePage() {
             )}
           </>
         )}
-      </div>
-      <style>{pageStyles}</style>
-    </div>
-  );
-}
-
-function BrowseAll() {
-  const categories = groupByCategory(getAllSets());
-  return (
-    <div className="home-page">
-      <div className="home-inner">
-        {categories.map((cat) => (
-          <CategorySection key={cat.name} name={cat.name} sets={cat.sets} />
-        ))}
       </div>
       <style>{pageStyles}</style>
     </div>

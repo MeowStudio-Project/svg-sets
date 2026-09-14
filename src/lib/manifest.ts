@@ -83,7 +83,7 @@ export async function loadSetFiles(set: SvgSet): Promise<SvgFile[]> {
   const defaultH =
     (typeof raw.height === 'number' && raw.height > 0 && raw.height) ||
     (typeof raw.info?.height === 'number' && raw.info.height > 0 && raw.info.height) ||
-    24;
+    16;
   const defaultW =
     (typeof raw.width === 'number' && raw.width > 0 && raw.width) ||
     (typeof raw.info?.width === 'number' && raw.info.width > 0 && raw.info.width) ||

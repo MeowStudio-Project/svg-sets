@@ -7,8 +7,9 @@ export function getIconBody(file: SvgFile, theme: Theme): string {
 }
 
 export function getViewBox(file: SvgFile): string {
-  const w = file.width && file.width > 0 ? file.width : 24;
-  const h = file.height && file.height > 0 ? file.height : 24;
+  // Iconify default grid is 16 when width/height omitted (e.g. Codicons)
+  const w = file.width && file.width > 0 ? file.width : 16;
+  const h = file.height && file.height > 0 ? file.height : 16;
   return `0 0 ${w} ${h}`;
 }
 

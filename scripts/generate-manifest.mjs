@@ -95,10 +95,11 @@ function processFile(relPath) {
   }
 
   // Prefer root width/height (Iconify grid), then info.*, then 24.
+  // Iconify default is 16 when set does not declare width/height (Codicons etc.)
   const defaultH =
     (typeof raw.height === 'number' && raw.height > 0 && raw.height) ||
     (typeof raw.info?.height === 'number' && raw.info.height > 0 && raw.info.height) ||
-    24;
+    16;
   const defaultW =
     (typeof raw.width === 'number' && raw.width > 0 && raw.width) ||
     (typeof raw.info?.width === 'number' && raw.info.width > 0 && raw.info.width) ||
@@ -197,7 +198,7 @@ function createMinimalZip(files) {
   for (const file of files) {
     const name = `${file.key}.svg`;
     const content = Buffer.from(
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${file.width || 24} ${file.height || 24}">\n  ${file.body}\n</svg>\n`,
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${file.width || 16} ${file.height || 16}">\n  ${file.body}\n</svg>\n`,
       'utf8'
     );
     const nameBuf = Buffer.from(name, 'utf8');

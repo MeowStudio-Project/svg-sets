@@ -4,6 +4,7 @@ import { getSetById, loadSetFiles } from '../lib/manifest';
 import { SvgGrid } from '../components/SvgGrid';
 import { Spinner } from '../components/Spinner';
 import type { SvgFile } from '../lib/types';
+import { archiveUrl } from '../lib/dataBase';
 
 export function SvgSetPage() {
   const { id } = useParams<{ id: string }>();
@@ -136,7 +137,7 @@ export function SvgSetPage() {
         {set.archive && (
           <div className="set-actions">
             <a
-              href={set.archive.url}
+              href={archiveUrl(set.archive.name)}
               download={set.archive.name}
               className="btn"
               aria-label="Download ZIP"

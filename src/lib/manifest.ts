@@ -1,4 +1,5 @@
-import type { SvgFile, SvgManifest, SvgSet, Theme } from './types';
+import type { SvgFile, SvgManifest, SvgSet } from './types';
+import { jsonUrl } from './dataBase';
 import manifestData from '../data/manifest.json';
 
 export const manifest = manifestData as SvgManifest;
@@ -40,7 +41,7 @@ type RawIcon = {
 
 /** Fetch full icon list for a set from /json/{source} */
 export async function loadSetFiles(set: SvgSet): Promise<SvgFile[]> {
-  const url = `/json/${set.source.split('/').map(encodeURIComponent).join('/')}`;
+  const url = jsonUrl(set.source);
   const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`Failed to load set: ${res.status}`);

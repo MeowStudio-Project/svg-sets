@@ -65,8 +65,20 @@ function baseId(relPath) {
   return path.basename(relPath, '.json').toLowerCase().replace(/[^a-z0-9]+/g, '-');
 }
 
+const MAX_JSON_BYTES = 24 * 1024 * 1024; // Cloudflare Pages 25 MiB limit
+
 function processFile(relPath) {
   const fullPath = path.join(SVG_DIR, relPath);
+  try {
+    const size = fs.statSync(fullPath).size;
+    if (size > MAX_JSON_BYTES) {
+      console.warn(`[warn] JSON too large for CF Pages (${(size / 1024 / 1024).toFixed(1)} MiB), skipping: ${relPath}`);
+      return null;
+    }
+  } catch (err) {
+    console.warn(`[warn] Cannot stat, skipping: ${relPath}`, err);
+    return null;
+  }
   let raw;
   try {
     const text = fs.readFileSync(fullPath, 'utf-8');
@@ -163,6 +175,7 @@ function processFile(relPath) {
     licenseUrl,
     samples,
     sampleFiles,
+    iconKeys: files.map((f) => f.key),
     source: relPath.replace(/\\/g, '/'),
     iconCount: files.length,
     // full files kept only for ZIP generation (stripped before write)

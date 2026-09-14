@@ -16,11 +16,10 @@ export type SvgSet = {
   authorUrl?: string;
   licenseName?: string;
   licenseUrl?: string;
-  /** Sample keys in display order */
   samples: string[];
-  /** Only sample icons (for homepage cards) — not the full set */
   sampleFiles: SvgFile[];
-  /** Relative path under /json/ to load the full set */
+  /** All icon keys in this set (for search, no bodies) */
+  iconKeys: string[];
   source: string;
   iconCount: number;
   archive?: {
@@ -35,6 +34,12 @@ export type SvgManifest = {
     name: string;
     sets: SvgSet[];
   }>;
+};
+
+/** A set matched by icon-name search, with which keys matched */
+export type IconSearchHit = {
+  set: SvgSet;
+  matchedKeys: string[];
 };
 
 export type Theme = 'light' | 'dark';

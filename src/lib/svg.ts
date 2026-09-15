@@ -6,8 +6,12 @@ export function getIconBody(file: SvgFile, theme: Theme): string {
   return file.body;
 }
 
+/**
+ * Resolve viewBox. Prefer explicit width/height from Iconify JSON.
+ * Fallback 16 matches Iconify default (Codicons, etc.).
+ * Sets like Akar (24) / Academicons (512) set dimensions on the file at load time.
+ */
 export function getViewBox(file: SvgFile): string {
-  // Iconify default grid is 16 when width/height omitted (e.g. Codicons)
   const w = file.width && file.width > 0 ? file.width : 16;
   const h = file.height && file.height > 0 ? file.height : 16;
   return `0 0 ${w} ${h}`;
@@ -16,7 +20,9 @@ export function getViewBox(file: SvgFile): string {
 export function buildSvgDocument(file: SvgFile, theme: Theme): string {
   const body = getIconBody(file, theme);
   const viewBox = getViewBox(file);
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}">\n  ${body}\n</svg>`;
+  const w = file.width && file.width > 0 ? file.width : 16;
+  const h = file.height && file.height > 0 ? file.height : 16;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" width="${w}" height="${h}">\n  ${body}\n</svg>`;
 }
 
 export function downloadSvg(filename: string, content: string) {

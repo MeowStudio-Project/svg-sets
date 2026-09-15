@@ -9,7 +9,6 @@ type Props = {
   size?: number | string;
   className?: string;
   title?: string;
-  /** Override site theme (used by SVG preview local toggle) */
   forceTheme?: Theme;
 };
 
@@ -29,10 +28,12 @@ export function SvgIcon({ file, size = 24, className, title, forceTheme }: Props
       viewBox={viewBox}
       width={size}
       height={size}
+      preserveAspectRatio="xMidYMid meet"
       className={className}
       role={title ? 'img' : 'presentation'}
       aria-hidden={title ? undefined : true}
       aria-label={title}
+      style={{ display: 'block', flexShrink: 0 }}
       dangerouslySetInnerHTML={{ __html: body }}
     />
   );

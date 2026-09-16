@@ -1,6 +1,6 @@
 /**
- * Icon JSON + ZIP hosted on the data repo (not on Cloudflare Pages).
- * Using GitHub raw — jsDelivr rejects repos/packages over 50 MB.
+ * Icon JSON + ZIP from the public data repo.
+ * https://github.com/MeowStudio-Project/svg-sets-data/tree/main
  */
 export const DATA_BASE =
   'https://raw.githubusercontent.com/MeowStudio-Project/svg-sets-data/main';

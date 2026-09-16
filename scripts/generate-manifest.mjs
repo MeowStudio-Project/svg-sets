@@ -19,9 +19,10 @@ const OUT_DIR = path.join(ROOT, 'src', 'data');
 const MANIFEST_PATH = path.join(OUT_DIR, 'manifest.json');
 const ARCHIVES_DIR = path.join(ROOT, 'archives');
 
-const DATA_OWNER = process.env.DATA_OWNER || 'MeowStudio-Project';
-const DATA_REPO = process.env.DATA_REPO || 'svg-sets-data';
-const DATA_BRANCH = process.env.DATA_BRANCH || 'main';
+// Hardcoded public data repo (no env needed)
+const DATA_OWNER = 'MeowStudio-Project';
+const DATA_REPO = 'svg-sets-data';
+const DATA_BRANCH = 'main';
 const MAX_JSON_BYTES = 24 * 1024 * 1024;
 
 function walkLocalJson(dir, base = dir) {
